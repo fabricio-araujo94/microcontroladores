@@ -5,6 +5,8 @@
 #define PEDESTRIAN_LED_RED 33
 #define PEDESTRIAN_LED_GREEN 32
 #define PEDESTRIAN_LED_BLUE 26
+#define SLEEP 5000
+#define ATTENTION 2000
 
 // put function declarations here:
 void carRun();
@@ -32,4 +34,5 @@ void carRun() {
   digitalWrite(PEDESTRIAN_LED_RED, HIGH);
   digitalWrite(PEDESTRIAN_LED_GREEN, LOW);
   digitalWrite(PEDESTRIAN_LED_BLUE, LOW);
+  delay(SLEEP);
 }
