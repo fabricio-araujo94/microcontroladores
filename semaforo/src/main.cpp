@@ -12,6 +12,7 @@
 void carRun();
 void carAttention();
 void pedestrianRun();
+void pedestrianAttention();
 
 void setup() {
   // put your setup code here, to run once:
@@ -28,6 +29,7 @@ void loop() {
   carRun();
   carAttention();
   pedestrianRun();
+  pedestrianAttention();
 }
 
 // put function definitions here:
@@ -59,4 +61,14 @@ void pedestrianRun() {
   digitalWrite(PEDESTRIAN_LED_GREEN, HIGH);
   digitalWrite(PEDESTRIAN_LED_BLUE, LOW);
   delay(SLEEP);
+};
+
+void pedestrianAttention() {
+  digitalWrite(CAR_LED_RED, HIGH);
+  digitalWrite(CAR_LED_GREEN, LOW);
+  digitalWrite(CAR_LED_BLUE, LOW);
+  digitalWrite(PEDESTRIAN_LED_RED, LOW);
+  digitalWrite(PEDESTRIAN_LED_GREEN, LOW);
+  digitalWrite(PEDESTRIAN_LED_BLUE, HIGH);
+  delay(ATTENTION);
 };
