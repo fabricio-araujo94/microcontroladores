@@ -10,7 +10,12 @@
 
 void setup() {
   // put your setup code here, to run once:
-  
+  pinMode(CAR_LED_RED, OUTPUT);
+  pinMode(CAR_LED_GREEN, OUTPUT);
+  pinMode(CAR_LED_BLUE, OUTPUT);
+  pinMode(PEDESTRIAN_LED_RED, OUTPUT);
+  pinMode(PEDESTRIAN_LED_GREEN, OUTPUT);
+  pinMode(PEDESTRIAN_LED_BLUE, OUTPUT);
 }
 
 void loop() {
