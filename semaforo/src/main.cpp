@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#define BUTTON 19
 #define CAR_LED_RED 21
 #define CAR_LED_GREEN 22
 #define CAR_LED_BLUE 23
@@ -22,14 +23,19 @@ void setup() {
   pinMode(PEDESTRIAN_LED_RED, OUTPUT);
   pinMode(PEDESTRIAN_LED_GREEN, OUTPUT);
   pinMode(PEDESTRIAN_LED_BLUE, OUTPUT);
+  pinMode(BUTTON, INPUT);
+  digitalWrite(BUTTON, LOW);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  carRun();
-  carAttention();
-  pedestrianRun();
-  pedestrianAttention();
+  if(digitalRead(BUTTON) == HIGH) {
+    carAttention();
+    pedestrianRun();
+    pedestrianAttention();
+  } else {
+    carRun();
+  }
 }
 
 // put function definitions here:
@@ -40,7 +46,6 @@ void carRun() {
   digitalWrite(PEDESTRIAN_LED_RED, HIGH);
   digitalWrite(PEDESTRIAN_LED_GREEN, LOW);
   digitalWrite(PEDESTRIAN_LED_BLUE, LOW);
-  delay(SLEEP);
 }
 
 void carAttention() {
