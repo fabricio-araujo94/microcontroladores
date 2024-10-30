@@ -11,6 +11,7 @@
 // put function declarations here:
 void carRun();
 void carAttention();
+void pedestrianRun();
 
 void setup() {
   // put your setup code here, to run once:
@@ -26,6 +27,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   carRun();
   carAttention();
+  pedestrianRun();
 }
 
 // put function definitions here:
@@ -47,4 +49,14 @@ void carAttention() {
   digitalWrite(PEDESTRIAN_LED_GREEN, LOW);
   digitalWrite(PEDESTRIAN_LED_BLUE, LOW);
   delay(ATTENTION);
+};
+
+void pedestrianRun() {
+  digitalWrite(CAR_LED_RED, HIGH);
+  digitalWrite(CAR_LED_GREEN, LOW);
+  digitalWrite(CAR_LED_BLUE, LOW);
+  digitalWrite(PEDESTRIAN_LED_RED, LOW);
+  digitalWrite(PEDESTRIAN_LED_GREEN, HIGH);
+  digitalWrite(PEDESTRIAN_LED_BLUE, LOW);
+  delay(SLEEP);
 };
