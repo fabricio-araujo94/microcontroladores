@@ -1,4 +1,19 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+
+// network credential
+#define SSID ""
+#define PASSWORD ""
+
+// telegram bot
+#define BOTTOKEN ""
+
+// your chat id
+#define CHATID ""
+
+// pins
 #define BUTTON 19
 #define CAR_LED_RED 21
 #define CAR_LED_GREEN 22
@@ -6,11 +21,17 @@
 #define PEDESTRIAN_LED_RED 33
 #define PEDESTRIAN_LED_GREEN 32
 #define PEDESTRIAN_LED_BLUE 26
+
+// time of wait
 #define SLEEP 5000
 #define ATTENTION 2000
 
+// tasks
 TaskHandle_t Task1;
 TaskHandle_t Task2;
+
+// global
+WiFiClientSecure client;
 
 // put function declarations here:
 void carRun();
@@ -33,6 +54,18 @@ void setup() {
   pinMode(PEDESTRIAN_LED_BLUE, OUTPUT);
   pinMode(BUTTON, INPUT_PULLDOWN);
   digitalWrite(BUTTON, LOW);
+
+  
+  // Connecting to Wi-Fi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWORD);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  Serial.println(WiFi.localIP());
 
   xTaskCreatePinnedToCore(semaphore, "Semaphore", 10000, NULL, 0, &Task1, 0);
   xTaskCreatePinnedToCore(triggering, "Triggering",  10000, NULL, 1, &Task2, 1);
