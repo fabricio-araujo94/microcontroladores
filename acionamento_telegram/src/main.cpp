@@ -32,6 +32,7 @@ TaskHandle_t Task2;
 
 // global
 WiFiClientSecure client;
+UniversalTelegramBot bot(BOTtoken, client);
 
 // put function declarations here:
 void carRun();
@@ -78,22 +79,28 @@ void loop() {
 
 // functions for threads
 void semaphore(void *parameter) {
-  if(digitalRead(BUTTON) == HIGH) {
-    Serial.println("Semáforo acionado!");
-    carAttention();
-    pedestrianRun();
-    pedestrianAttention();
-  } else {
-    carRun();
+  while(true) {
+    if(digitalRead(BUTTON) == HIGH) {
+      Serial.println("Semáforo acionado!");
+      carAttention();
+      pedestrianRun();
+      pedestrianAttention();
+    } else {
+      carRun();
+    }
+    delay(500);
   }
-  delay(500);
 }
 
 void triggering(void *parameter) {
-  if(digitalRead(BUTTON) == HIGH) {
-    Serial.println("Mensagem enviada!");
+  while (true) {
+    if(digitalRead(BUTTON) == HIGH) {
+      Serial.println("Mensagem enviada!");
+      bot.sendMessage(CHATID, "Mensagem de teste.", "");
+    }
+    delay(750);
   }
-  delay(750);
+  
 }
 
 
