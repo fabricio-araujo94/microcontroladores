@@ -9,14 +9,22 @@
 #define SLEEP 5000
 #define ATTENTION 2000
 
+TaskHandle_t Task1;
+TaskHandle_t Task2;
+
 // put function declarations here:
 void carRun();
 void carAttention();
 void pedestrianRun();
 void pedestrianAttention();
 
+void semaphore(void *);
+void triggering(void *);
+
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
+
   pinMode(CAR_LED_RED, OUTPUT);
   pinMode(CAR_LED_GREEN, OUTPUT);
   pinMode(CAR_LED_BLUE, OUTPUT);
@@ -25,18 +33,36 @@ void setup() {
   pinMode(PEDESTRIAN_LED_BLUE, OUTPUT);
   pinMode(BUTTON, INPUT_PULLDOWN);
   digitalWrite(BUTTON, LOW);
+
+  xTaskCreatePinnedToCore(semaphore, "Semaphore", 10000, NULL, 0, &Task1, 0);
+  xTaskCreatePinnedToCore(triggering, "Triggering",  10000, NULL, 1, &Task2, 1);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  
+}
+
+// functions for threads
+void semaphore(void *parameter) {
   if(digitalRead(BUTTON) == HIGH) {
+    Serial.println("Semáforo acionado!");
     carAttention();
     pedestrianRun();
     pedestrianAttention();
   } else {
     carRun();
   }
+  delay(500);
 }
+
+void triggering(void *parameter) {
+  if(digitalRead(BUTTON) == HIGH) {
+    Serial.println("Mensagem enviada!");
+  }
+  delay(750);
+}
+
 
 // put function definitions here:
 void carRun() {
