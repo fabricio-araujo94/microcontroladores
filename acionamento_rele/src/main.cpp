@@ -16,7 +16,41 @@
 // your chat id
 #define CHATID ""
 
+// global
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOTTOKEN, client);
+
 // put function declarations here:
+void handleNewMessages(int numNewMessages) {
+  for (int i = 0; i< numNewMessages; i++) {
+    String chat_id = String(bot.messages[i].chat_id);
+    if (chat_id != CHATID){
+      bot.sendMessage(chat_id, "Usuário não autorizado.", "");
+      continue;
+    }
+    
+    String text = bot.messages[i].text;
+    String from_name = bot.messages[i].from_name;
+
+    if (text == "/start") {
+      String welcome = "Bem-vindo, " + from_name + ".\n";
+      welcome += "Use os seguintes comandos para controlar o LED.\n\n";
+      welcome += "/led_on para ligar o LED. \n";
+      welcome += "/led_off para desligar o LED. \n";
+      bot.sendMessage(chat_id, welcome, "");
+    }
+
+    if (text == "/led_on") {
+      bot.sendMessage(chat_id, "O LED está ligado.", "");
+      digitalWrite(RELE, HIGH);
+    }
+    
+    if (text == "/led_off") {
+      bot.sendMessage(chat_id, "O LED está desligado.", "");
+      digitalWrite(RELE, LOW);
+    }
+  }
+}
 
 void setup() {
   // put your setup code here, to run once:
