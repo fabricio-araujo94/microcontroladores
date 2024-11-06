@@ -20,6 +20,23 @@
 
 void setup() {
   // put your setup code here, to run once:
+
+  Serial.begin(9600);
+
+  pinMode(RELE, OUTPUT);
+  digitalWrite(RELE, LOW);
+
+  // Connecting to Wi-Fi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWORD);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  Serial.println(WiFi.localIP());
+
 }
 
 void loop() {
