@@ -1,11 +1,25 @@
 #include <Arduino.h>
+#include <Wifi.h>
+#include <WifiClientSecure.h>
+#include <UniversalTelegramBot.h>
+
+// pins
+#define RELE 23
+
+// network credential
+#define SSID ""
+#define PASSWORD ""
+
+// telegram bot
+#define BOTTOKEN ""
+
+// your chat id
+#define CHATID ""
 
 // put function declarations here:
-int myFunction(int, int);
 
 void setup() {
   // put your setup code here, to run once:
-  int result = myFunction(2, 3);
 }
 
 void loop() {
@@ -13,6 +27,3 @@ void loop() {
 }
 
 // put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
