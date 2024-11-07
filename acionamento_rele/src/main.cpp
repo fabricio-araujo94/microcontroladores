@@ -20,7 +20,49 @@
 WiFiClientSecure client;
 UniversalTelegramBot bot(BOTTOKEN, client);
 
+// delay
+#define DELAY 1000
+unsigned long lastTimeBotRan;
+
 // put function declarations here:
+void handleNewMessages(int);
+
+void setup() {
+  // put your setup code here, to run once:
+
+  Serial.begin(9600);
+
+  pinMode(RELE, OUTPUT);
+  digitalWrite(RELE, LOW);
+
+  // Connecting to Wi-Fi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWORD);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  Serial.println(WiFi.localIP());
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (millis() > lastTimeBotRan + DELAY)  { // 1000 ms for delay
+    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+    while(numNewMessages) {
+      Serial.println("got response");
+      handleNewMessages(numNewMessages);
+      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    }
+    lastTimeBotRan = millis();
+  }
+}
+
+// put function definitions here:
 void handleNewMessages(int numNewMessages) {
   for (int i = 0; i< numNewMessages; i++) {
     String chat_id = String(bot.messages[i].chat_id);
@@ -51,30 +93,3 @@ void handleNewMessages(int numNewMessages) {
     }
   }
 }
-
-void setup() {
-  // put your setup code here, to run once:
-
-  Serial.begin(9600);
-
-  pinMode(RELE, OUTPUT);
-  digitalWrite(RELE, LOW);
-
-  // Connecting to Wi-Fi
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, PASSWORD);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
-
-  Serial.println(WiFi.localIP());
-
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
