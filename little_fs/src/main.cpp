@@ -10,18 +10,34 @@
 #define PASSWORD ""
 
 // put function declarations here:
+bool createDir(fs::FS &, const char *);
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
 
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
-
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
 }
 
 // put function definitions here:
+bool createDir(fs::FS &fs, const char *path)
+{
+  Serial.printf("Creating Dir: %s... ", path);
+  if (fs.mkdir(path))
+  {
+    Serial.println("Done!");
+    return true;
+  }
+  else
+  {
+    Serial.println("Failed!");
+    return false;
+  }
+}
