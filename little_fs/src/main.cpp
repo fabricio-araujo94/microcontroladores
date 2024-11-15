@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
+#include <vector>
+
+using namespace std;
 
 #define RED 21
 #define GREEN 19
@@ -14,7 +17,7 @@ bool createDir(fs::FS &, const char *);
 void listDir(fs::FS &);
 void listDirAux(fs::FS &, const char *, uint8_t);
 void writeFile(fs::FS &, const char *, const char *);
-void readFile(fs::FS &, const char *);
+vector<String> readFile(fs::FS &, const char *);
 
 void setup()
 {
@@ -111,7 +114,7 @@ void writeFile(fs::FS &fs, const char *path, const char *message)
   file.close();
 }
 
-void readFile(fs::FS &fs, const char *path)
+vector<String> readFile(fs::FS &fs, const char *path)
 {
   Serial.printf("Reading file: %s\r\n", path);
 
@@ -132,4 +135,31 @@ void readFile(fs::FS &fs, const char *path)
   Serial.println("Content: \n" + content);
 
   file.close();
+
+  return splitString(content, ",");
+}
+
+vector<String> splitString(String text, String delimiter) {
+  vector<String> words;  // Vetor para armazenar as palavras divididas
+
+  int start = 0;
+  int end;
+
+  // Encontrar as palavras divididas pelo delimitador
+  while ((end = text.indexOf(delimiter, start)) != -1) {
+    String word = text.substring(start, end);  // Pega a palavra entre os índices start e end
+    words.push_back(word);  // Adiciona a palavra ao vetor
+    start = end + delimiter.length();  // Move o índice de início para após o delimitador
+  }
+
+  String lastWord = text.substring(start);
+  if (lastWord.length() > 0) {
+    words.push_back(lastWord);  
+  }
+
+  for (const auto &str : words) {
+    Serial.println(str);
+  }
+
+  return words;
 }
