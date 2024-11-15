@@ -18,6 +18,7 @@ void listDir(fs::FS &);
 void listDirAux(fs::FS &, const char *, uint8_t);
 void writeFile(fs::FS &, const char *, const char *);
 vector<String> readFile(fs::FS &, const char *);
+void deleteFile(fs::FS &, const char *);
 
 void setup()
 {
@@ -162,4 +163,13 @@ vector<String> splitString(String text, String delimiter) {
   }
 
   return words;
+}
+
+void deleteFile(fs::FS &fs, const char * path){
+    Serial.printf("Deleting file: %s\r\n", path);
+    if(fs.remove(path)){
+        Serial.println("File deleted.");
+    } else {
+        Serial.println("Delete failed!");
+    }
 }
