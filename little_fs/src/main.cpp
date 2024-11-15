@@ -14,6 +14,7 @@ bool createDir(fs::FS &, const char *);
 void listDir(fs::FS &);
 void listDirAux(fs::FS &, const char *, uint8_t);
 void writeFile(fs::FS &, const char *, const char *);
+void readFile(fs::FS &, const char *);
 
 void setup()
 {
@@ -107,5 +108,28 @@ void writeFile(fs::FS &fs, const char *path, const char *message)
   {
     Serial.println("Something wrong happened. Failed!");
   }
+  file.close();
+}
+
+void readFile(fs::FS &fs, const char *path)
+{
+  Serial.printf("Reading file: %s\r\n", path);
+
+  File file = fs.open(path);
+  if (!file || file.isDirectory())
+  {
+    Serial.println("Failed to open. Check the path.");
+    return;
+  }
+
+  String content = "";
+
+  while (file.available())
+  {
+    content += (char)file.read();
+  }
+
+  Serial.println("Content: \n" + content);
+
   file.close();
 }
