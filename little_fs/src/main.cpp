@@ -13,6 +13,7 @@
 bool createDir(fs::FS &, const char *);
 void listDir(fs::FS &);
 void listDirAux(fs::FS &, const char *, uint8_t);
+void writeFile(fs::FS &, const char *, const char *);
 
 void setup()
 {
@@ -44,37 +45,67 @@ bool createDir(fs::FS &fs, const char *path)
   }
 }
 
-void listDir(fs::FS &fs){
+void listDir(fs::FS &fs)
+{
   listDirAux(fs, "/", 1);
 }
 
-void listDirAux(fs::FS &fs, const char *dirname, uint8_t levels){
-    Serial.printf("Directory: %s\r\n", dirname);
+void listDirAux(fs::FS &fs, const char *dirname, uint8_t levels)
+{
+  Serial.printf("Directory: %s\r\n", dirname);
 
-    File root = fs.open(dirname);
-    if(!root){
-        Serial.println("Failed!");
-        return;
-    }
-    if(!root.isDirectory()){
-        Serial.println("Not a directory.");
-        return;
-    }
+  File root = fs.open(dirname);
+  if (!root)
+  {
+    Serial.println("Failed!");
+    return;
+  }
+  if (!root.isDirectory())
+  {
+    Serial.println("Not a directory.");
+    return;
+  }
 
-    File file = root.openNextFile();
-    while(file){
-        if(file.isDirectory()){
-            Serial.print("  DIR : ");
-            Serial.println(file.name());
-            if(levels){
-                listDirAux(fs, file.path(), levels -1);
-            }
-        } else {
-            Serial.print("  FILE: ");
-            Serial.print(file.name());
-            Serial.print("\tSIZE: ");
-            Serial.println(file.size());
-        }
-        file = root.openNextFile();
+  File file = root.openNextFile();
+  while (file)
+  {
+    if (file.isDirectory())
+    {
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if (levels)
+      {
+        listDirAux(fs, file.path(), levels - 1);
+      }
     }
+    else
+    {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("\tSIZE: ");
+      Serial.println(file.size());
+    }
+    file = root.openNextFile();
+  }
+}
+
+void writeFile(fs::FS &fs, const char *path, const char *message)
+{
+  Serial.printf("Writing in: %s\r\n", path);
+
+  File file = fs.open(path, FILE_WRITE);
+  if (!file)
+  {
+    Serial.println("Failed!");
+    return;
+  }
+  if (file.print(message))
+  {
+    Serial.println("Done!");
+  }
+  else
+  {
+    Serial.println("Something wrong happened. Failed!");
+  }
+  file.close();
 }
