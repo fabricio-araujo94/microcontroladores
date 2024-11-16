@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
+#include <WiFi.h>
 #include <vector>
 
 using namespace std;
@@ -23,10 +24,70 @@ void deleteFile(fs::FS &, const char *);
 void setup()
 {
   // put your setup code here, to run once:
-
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
+
+  if (!LittleFS.begin(true))
+  {
+    Serial.println("LittleFS Mount Failed");
+    return;
+  }
+
+  // create dirs
+  createDir(LittleFS, "/wifi");
+  createDir(LittleFS, "/rgb_state");
+
+  // writing files
+  String credentials = String(SSID) + "," + String(PASSWORD);
+  String states = "HIGH,LOW,HIGH";
+
+  writeFile(LittleFS, "/wifi/credentials.txt", credentials.c_str());
+  writeFile(LittleFS, "/rgb_state/states.txt", states.c_str());
+
+  // read files
+  vector<String> wifi_creds = readFile(LittleFS, "/wifi/credentials.txt");
+  vector<String> rgbs = readFile(LittleFS, "/rgb_state/states.txt");
+
+  // setting wifi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(wifi_creds.at(0), wifi_creds.at(1));
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  // setting rgbs
+  if (rgbs.at(0) == "HIGH")
+  {
+    digitalWrite(RED, HIGH);
+  }
+  else
+  {
+    digitalWrite(RED, LOW);
+  }
+
+  if (rgbs.at(1) == "HIGH")
+  {
+    digitalWrite(GREEN, HIGH);
+  }
+  else
+  {
+    digitalWrite(GREEN, LOW);
+  }
+
+  if (rgbs.at(2) == "HIGH")
+  {
+    digitalWrite(BLUE, HIGH);
+  }
+  else
+  {
+    digitalWrite(BLUE, LOW);
+  }
+
+  LittleFS.end();
 }
 
 void loop()
@@ -140,36 +201,43 @@ vector<String> readFile(fs::FS &fs, const char *path)
   return splitString(content, ",");
 }
 
-vector<String> splitString(String text, String delimiter) {
-  vector<String> words;  // Vetor para armazenar as palavras divididas
+vector<String> splitString(String text, String delimiter)
+{
+  vector<String> words;
 
   int start = 0;
   int end;
 
-  // Encontrar as palavras divididas pelo delimitador
-  while ((end = text.indexOf(delimiter, start)) != -1) {
-    String word = text.substring(start, end);  // Pega a palavra entre os índices start e end
-    words.push_back(word);  // Adiciona a palavra ao vetor
-    start = end + delimiter.length();  // Move o índice de início para após o delimitador
+  while ((end = text.indexOf(delimiter, start)) != -1)
+  {
+    String word = text.substring(start, end);
+    words.push_back(word);
+    start = end + delimiter.length();
   }
 
   String lastWord = text.substring(start);
-  if (lastWord.length() > 0) {
-    words.push_back(lastWord);  
+  if (lastWord.length() > 0)
+  {
+    words.push_back(lastWord);
   }
 
-  for (const auto &str : words) {
+  for (const auto &str : words)
+  {
     Serial.println(str);
   }
 
   return words;
 }
 
-void deleteFile(fs::FS &fs, const char * path){
-    Serial.printf("Deleting file: %s\r\n", path);
-    if(fs.remove(path)){
-        Serial.println("File deleted.");
-    } else {
-        Serial.println("Delete failed!");
-    }
+void deleteFile(fs::FS &fs, const char *path)
+{
+  Serial.printf("Deleting file: %s\r\n", path);
+  if (fs.remove(path))
+  {
+    Serial.println("File deleted.");
+  }
+  else
+  {
+    Serial.println("Delete failed!");
+  }
 }
