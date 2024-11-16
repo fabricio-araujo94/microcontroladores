@@ -13,17 +13,18 @@ using namespace std;
 #define SSID ""
 #define PASSWORD ""
 
-// put function declarations here:
 bool createDir(fs::FS &, const char *);
 void listDir(fs::FS &);
 void listDirAux(fs::FS &, const char *, uint8_t);
 void writeFile(fs::FS &, const char *, const char *);
 vector<String> readFile(fs::FS &, const char *);
+vector<String> splitString(String, String);
 void deleteFile(fs::FS &, const char *);
 
 void setup()
 {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
@@ -34,68 +35,46 @@ void setup()
     return;
   }
 
-  // create dirs
   createDir(LittleFS, "/wifi");
   createDir(LittleFS, "/rgb_state");
 
-  // writing files
   String credentials = String(SSID) + "," + String(PASSWORD);
   String states = "HIGH,LOW,HIGH";
 
   writeFile(LittleFS, "/wifi/credentials.txt", credentials.c_str());
   writeFile(LittleFS, "/rgb_state/states.txt", states.c_str());
 
-  // read files
   vector<String> wifi_creds = readFile(LittleFS, "/wifi/credentials.txt");
   vector<String> rgbs = readFile(LittleFS, "/rgb_state/states.txt");
 
-  // setting wifi
   WiFi.mode(WIFI_STA);
-  WiFi.begin(wifi_creds.at(0), wifi_creds.at(1));
+  WiFi.begin(wifi_creds.at(0).c_str(), wifi_creds.at(1).c_str());
 
-  while (WiFi.status() != WL_CONNECTED)
+  int wifiRetries = 0;
+  while (WiFi.status() != WL_CONNECTED && wifiRetries < 30)
   {
     delay(1000);
     Serial.println("Connecting to WiFi..");
+    wifiRetries++;
   }
 
-  // setting rgbs
-  if (rgbs.at(0) == "HIGH")
+  if (WiFi.status() != WL_CONNECTED)
   {
-    digitalWrite(RED, HIGH);
-  }
-  else
-  {
-    digitalWrite(RED, LOW);
+    Serial.println("Failed to connect to WiFi");
+    return;
   }
 
-  if (rgbs.at(1) == "HIGH")
-  {
-    digitalWrite(GREEN, HIGH);
-  }
-  else
-  {
-    digitalWrite(GREEN, LOW);
-  }
+  Serial.println("WiFi connected");
 
-  if (rgbs.at(2) == "HIGH")
-  {
-    digitalWrite(BLUE, HIGH);
-  }
-  else
-  {
-    digitalWrite(BLUE, LOW);
-  }
-
-  LittleFS.end();
+  digitalWrite(RED, (rgbs.at(0) == "HIGH") ? HIGH : LOW);
+  digitalWrite(GREEN, (rgbs.at(1) == "HIGH") ? HIGH : LOW);
+  digitalWrite(BLUE, (rgbs.at(2) == "HIGH") ? HIGH : LOW);
 }
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
 }
 
-// put function definitions here:
 bool createDir(fs::FS &fs, const char *path)
 {
   Serial.printf("Creating Dir: %s... ", path);
@@ -171,7 +150,7 @@ void writeFile(fs::FS &fs, const char *path, const char *message)
   }
   else
   {
-    Serial.println("Something wrong happened. Failed!");
+    Serial.println("Something went wrong. Failed!");
   }
   file.close();
 }
@@ -180,25 +159,24 @@ vector<String> readFile(fs::FS &fs, const char *path)
 {
   Serial.printf("Reading file: %s\r\n", path);
 
+  vector<String> parts;
+
   File file = fs.open(path);
   if (!file || file.isDirectory())
   {
     Serial.println("Failed to open. Check the path.");
-    return;
+    return parts;
   }
 
-  String content = "";
-
-  while (file.available())
-  {
-    content += (char)file.read();
-  }
+  String content = file.readString();
 
   Serial.println("Content: \n" + content);
 
   file.close();
 
-  return splitString(content, ",");
+  parts = splitString(content, ",");
+
+  return parts;
 }
 
 vector<String> splitString(String text, String delimiter)
