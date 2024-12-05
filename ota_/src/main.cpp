@@ -10,6 +10,8 @@
 #include <ESPmDNS.h>
 #include <Update.h>
 
+#define RED 19
+
 #define HOSTNAME "esp32"
 #define SSID ""
 #define PASSWORD ""
@@ -103,6 +105,8 @@ const char* serverIndex =
 void setup(void) {
   Serial.begin(9600);
 
+  pinMode(RED, OUTPUT);
+
   WiFi.begin(SSID, PASSWORD);
   Serial.println("Connecting to wifi...");
 
@@ -163,4 +167,10 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   delay(1);
+
+  digitalWrite(RED, HIGH);
+  delay(2000);
+
+  digitalWrite(RED, LOW);
+  delay(2000);
 }
