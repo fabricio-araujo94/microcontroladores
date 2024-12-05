@@ -24,7 +24,7 @@ esp_now_peer_info_t peerInfo;
 
 // void readMacAddress();
 void OnDataSent(const uint8_t *, esp_now_send_status_t);
-void OnDataSent(const uint8_t *, esp_now_send_status_t);
+void OnDataRecv(const uint8_t *, const uint8_t *, int);
 
 void setup()
 {
