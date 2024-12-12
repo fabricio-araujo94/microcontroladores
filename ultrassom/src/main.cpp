@@ -19,7 +19,7 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, OUTPUT);
+  pinMode(ECHO, INPUT);
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
 }
